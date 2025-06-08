@@ -27,18 +27,25 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Debug env
+        run: echo "SHARED_BUILD_DATA_BUCKET=$SHARED_BUILD_DATA_BUCKET"
+
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
+        working-directory: terraform      
         run: terraform init
 
       - name: Terraform Validate
+        working-directory: terraform
         run: terraform validate
 
       - name: Terraform Plan
+        working-directory: terraform
         run: terraform plan -var="shared_build_data_bucket=$SHARED_BUILD_DATA_BUCKET"
 
       - name: Terraform Apply
+        working-directory: terraform
         run: terraform apply -auto-approve -var="shared_build_data_bucket=$SHARED_BUILD_DATA_BUCKET"
 
