@@ -12,6 +12,7 @@ permissions:
   
 env:
   AWS_REGION: ${{ vars.AWS_REGION }}
+  SHARED_DATA_BUCKET : ${{ vars.SHARED_DATA_BUCKET }}
   SHARED_BUILD_DATA_BUCKET: ${{ vars.SHARED_BUILD_DATA_BUCKET }}
 
 jobs:
@@ -29,7 +30,9 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Debug env
-        run: echo "SHARED_BUILD_DATA_BUCKET=$SHARED_BUILD_DATA_BUCKET"
+        run: |
+         echo "SHARED_DATA_BUCKET=$SHARED_DATA_BUCKET"
+         echo "SHARED_BUILD_DATA_BUCKET=$SHARED_BUILD_DATA_BUCKET"
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
@@ -44,13 +47,17 @@ jobs:
 
       - name: Terraform Plan
         working-directory: terraform
-        run: terraform plan -var="shared_build_data_bucket=$SHARED_BUILD_DATA_BUCKET"
+        run: terraform plan -var="shared_data_bucket=$SHARED_DATA_BUCKET" -var="shared_build_data_bucket=$SHARED_BUILD_DATA_BUCKET"
 
-      - name: Terraform Import S3 Bucket
+      - name: Terraform Import S3 data bucket
         working-directory: terraform
-        run: terraform import -var="shared_build_data_bucket=$SHARED_BUILD_DATA_BUCKET" aws_s3_bucket.shared_build_data $SHARED_BUILD_DATA_BUCKET
+        run: terraform import -var="shared_data_bucket=$SHARED_DATA_BUCKET" -var="shared_build_data_bucket=$SHARED_BUILD_DATA_BUCKET" aws_s3_bucket.shared_data $SHARED_DATA_BUCKET
+
+      - name: Terraform Import S3 build data bucket
+        working-directory: terraform
+        run: terraform import -var="shared_data_bucket=$SHARED_DATA_BUCKET" -var="shared_build_data_bucket=$SHARED_BUILD_DATA_BUCKET" aws_s3_bucket.shared_build_data $SHARED_BUILD_DATA_BUCKET
 
       - name: Terraform Apply
         working-directory: terraform
-        run: terraform apply -auto-approve -var="shared_build_data_bucket=$SHARED_BUILD_DATA_BUCKET"
+        run: terraform apply -auto-approve -var="shared_data_bucket=$SHARED_DATA_BUCKET" -var="shared_build_data_bucket=$SHARED_BUILD_DATA_BUCKET"
 
