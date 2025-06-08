@@ -49,7 +49,7 @@ jobs:
         working-directory: terraform
         run: | 
           terraform plan \
-          -var="shared_data_bucket=$SHARED_DATA_BUCKET" \ 
+          -var="shared_data_bucket=$SHARED_DATA_BUCKET" \
           -var="shared_build_data_bucket=$SHARED_BUILD_DATA_BUCKET"
 
       - name: Terraform Import S3 data bucket
