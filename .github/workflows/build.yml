@@ -48,7 +48,7 @@ jobs:
 
       - name: Terraform Import S3 Bucket
         working-directory: terraform
-        run: terraform import -var="shared_build_data_bucket=$SHARED_BUILD_DATA_BUCKET" aws_s3_bucket.lambda_bucket $SHARED_BUILD_DATA_BUCKET
+        run: terraform import -var="shared_build_data_bucket=$SHARED_BUILD_DATA_BUCKET" aws_s3_bucket.shared_build_data $SHARED_BUILD_DATA_BUCKET
 
       - name: Terraform Apply
         working-directory: terraform
