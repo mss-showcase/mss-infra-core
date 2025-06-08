@@ -58,7 +58,7 @@ jobs:
           terraform import \
           -var="shared_data_bucket=$SHARED_DATA_BUCKET" \
           -var="shared_build_data_bucket=$SHARED_BUILD_DATA_BUCKET" \
-          aws_s3_bucket.shared_data $SHARED_DATA_BUCKET
+          aws_s3_bucket.shared_data $SHARED_DATA_BUCKET || true
 
       - name: Terraform Import S3 build data bucket
         working-directory: terraform
@@ -66,7 +66,7 @@ jobs:
           terraform import \
           -var="shared_data_bucket=$SHARED_DATA_BUCKET" \
           -var="shared_build_data_bucket=$SHARED_BUILD_DATA_BUCKET" \
-          aws_s3_bucket.shared_build_data $SHARED_BUILD_DATA_BUCKET
+          aws_s3_bucket.shared_build_data $SHARED_BUILD_DATA_BUCKET || true
 
       - name: Terraform Apply
         working-directory: terraform
