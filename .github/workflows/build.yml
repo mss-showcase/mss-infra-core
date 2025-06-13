@@ -14,7 +14,7 @@ env:
   AWS_REGION: ${{ vars.AWS_REGION }}
   SHARED_DATA_BUCKET : ${{ vars.SHARED_DATA_BUCKET }}
   SHARED_BUILD_DATA_BUCKET: ${{ vars.SHARED_BUILD_DATA_BUCKET }}
-  WEBHOSTING_BUCKET: ${{ vars.WEBHOSTING_BUCKET }} // the value in github org vars is mss-webhosting-bucket
+  WEBHOSTING_BUCKET: ${{ vars.WEBHOSTING_BUCKET }} 
 
 jobs:
   deploy:
