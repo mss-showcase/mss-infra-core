@@ -24,6 +24,30 @@ resource "aws_s3_bucket" "webhosting" {
     Name    = var.webhosting_bucket
     Project = "mss"
   }
+
+  website {
+    index_document = "index.html"
+    error_document = "index.html"
+  }
+}
+
+resource "aws_s3_bucket_policy" "webhosting_public_read" {
+  bucket = aws_s3_bucket.webhosting.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "PublicReadGetObject"
+        Effect    = "Allow"
+        Principal = "*"
+        Action    = [
+          "s3:GetObject"
+        ]
+        Resource = "${aws_s3_bucket.webhosting.arn}/*"
+      }
+    ]
+  })
 }
 
 output "shared_data_bucket" {
@@ -36,4 +60,8 @@ output "shared_build_data_bucket" {
 
 output "webhosting_bucket" {
   value = aws_s3_bucket.webhosting.id
+}
+
+output "webhosting_website_endpoint" {
+  value = aws_s3_bucket.webhosting.website_endpoint
 }
