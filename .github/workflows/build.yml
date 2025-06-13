@@ -14,6 +14,7 @@ env:
   AWS_REGION: ${{ vars.AWS_REGION }}
   SHARED_DATA_BUCKET : ${{ vars.SHARED_DATA_BUCKET }}
   SHARED_BUILD_DATA_BUCKET: ${{ vars.SHARED_BUILD_DATA_BUCKET }}
+  WEBHOSTING_BUCKET: ${{ vars.WEBHOSTING_BUCKET }} // the value in github org vars is mss-webhosting-bucket
 
 jobs:
   deploy:
@@ -50,7 +51,8 @@ jobs:
         run: | 
           terraform plan \
           -var="shared_data_bucket=$SHARED_DATA_BUCKET" \
-          -var="shared_build_data_bucket=$SHARED_BUILD_DATA_BUCKET"
+          -var="shared_build_data_bucket=$SHARED_BUILD_DATA_BUCKET" \
+          -var="webhosting_bucket=$WEBHOSTING_BUCKET"
 
       - name: Terraform Import S3 data bucket
         working-directory: terraform
@@ -58,6 +60,7 @@ jobs:
           terraform import \
           -var="shared_data_bucket=$SHARED_DATA_BUCKET" \
           -var="shared_build_data_bucket=$SHARED_BUILD_DATA_BUCKET" \
+          -var="webhosting_bucket=$WEBHOSTING_BUCKET" \
           aws_s3_bucket.shared_data $SHARED_DATA_BUCKET || true
 
       - name: Terraform Import S3 build data bucket
@@ -66,12 +69,23 @@ jobs:
           terraform import \
           -var="shared_data_bucket=$SHARED_DATA_BUCKET" \
           -var="shared_build_data_bucket=$SHARED_BUILD_DATA_BUCKET" \
+          -var="webhosting_bucket=$WEBHOSTING_BUCKET" \
           aws_s3_bucket.shared_build_data $SHARED_BUILD_DATA_BUCKET || true
+
+      - name: Terraform Import S3 webhosting bucket
+        working-directory: terraform
+        run: |
+          terraform import \
+          -var="shared_data_bucket=$SHARED_DATA_BUCKET" \
+          -var="shared_build_data_bucket=$SHARED_BUILD_DATA_BUCKET" \
+          -var="webhosting_bucket=$WEBHOSTING_BUCKET" \
+          aws_s3_bucket.webhosting $WEBHOSTING_BUCKET || true
 
       - name: Terraform Apply
         working-directory: terraform
         run: |
           terraform apply -auto-approve \
           -var="shared_data_bucket=$SHARED_DATA_BUCKET" \
-          -var="shared_build_data_bucket=$SHARED_BUILD_DATA_BUCKET"
+          -var="shared_build_data_bucket=$SHARED_BUILD_DATA_BUCKET" \
+          -var="webhosting_bucket=$WEBHOSTING_BUCKET"
 
