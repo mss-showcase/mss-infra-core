@@ -38,6 +38,14 @@ resource "aws_s3_bucket_website_configuration" "webhosting" {
   }
 }
 
+resource "aws_s3_bucket_public_access_block" "webhosting" {
+  bucket                  = aws_s3_bucket.webhosting.id
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
+}
+
 resource "aws_s3_bucket_policy" "webhosting_public_read" {
   bucket = aws_s3_bucket.webhosting.id
 
@@ -70,5 +78,5 @@ output "webhosting_bucket" {
 }
 
 output "webhosting_website_endpoint" {
-  value = aws_s3_bucket.webhosting.website_endpoint
+  value = aws_s3_bucket_website_configuration.webhosting.website_endpoint
 }
