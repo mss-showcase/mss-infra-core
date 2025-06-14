@@ -18,8 +18,28 @@ resource "aws_s3_bucket" "shared_build_data" {
   }
 }
 
-resource "aws_s3_bucket_policy" "shared_data_public_read" {
-  bucket = aws_s3_bucket.shared_data.id
+resource "aws_s3_bucket" "webhosting" {
+  bucket = var.webhosting_bucket
+  tags = {
+    Name    = var.webhosting_bucket
+    Project = "mss"
+  }
+}
+
+resource "aws_s3_bucket_website_configuration" "webhosting" {
+  bucket = aws_s3_bucket.webhosting.id
+
+  index_document {
+    suffix = "index.html"
+  }
+
+  error_document {
+    key = "error.html" 
+  }
+}
+
+resource "aws_s3_bucket_policy" "webhosting_public_read" {
+  bucket = aws_s3_bucket.webhosting.id
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -31,22 +51,10 @@ resource "aws_s3_bucket_policy" "shared_data_public_read" {
         Action    = [
           "s3:GetObject"
         ]
-        Resource = "${aws_s3_bucket.shared_data.arn}/*"
+        Resource = "${aws_s3_bucket.webhosting.arn}/*"
       }
     ]
   })
-}
-
-resource "aws_s3_bucket_website_configuration" "shared_data_website" {
-  bucket = aws_s3_bucket.shared_data.id
-
-  index_document {
-    suffix = "index.html"
-  }
-
-  error_document {
-    key = "error.html"
-  }
 }
 
 output "shared_data_bucket" {
@@ -55,4 +63,12 @@ output "shared_data_bucket" {
 
 output "shared_build_data_bucket" {
   value = aws_s3_bucket.shared_build_data.id
+}
+
+output "webhosting_bucket" {
+  value = aws_s3_bucket.webhosting.id
+}
+
+output "webhosting_website_endpoint" {
+  value = aws_s3_bucket.webhosting.website_endpoint
 }
